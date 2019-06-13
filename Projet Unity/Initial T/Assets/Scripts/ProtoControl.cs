@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class ProtoControl : MonoBehaviour
 {
-	[SerializeField] float acceleration;
-	[SerializeField] float rotationSpeed;
+	[SerializeField] private float acceleration;
+	[SerializeField] private float rotationSpeed;
+	[SerializeField] private float driftRotationSpeed;
 
-	[SerializeField] GameObject rightPivot;
-	[SerializeField] GameObject leftPivot;
+	[SerializeField] private GameObject rightPivot;
+	[SerializeField] private GameObject leftPivot;
 
 	private bool accelerating = false;
 
@@ -18,69 +19,201 @@ public class ProtoControl : MonoBehaviour
 
 	private Vector3 turnAxis = new Vector3(0, 1, 0);
 
-	// Start is called before the first frame update
+	private bool waitingDriftDir = false;
+	private float waitDriftDirTimer = 0.0f;
+	[SerializeField] private float waitDriftDirTime;
+
+	private float driftCharge = 0.0f;
+	[SerializeField] private float tier1DriftCharge = 130.0f;
+	[SerializeField] private float tier1DriftBoost = 30.0f;
+	[SerializeField] private float tier1DriftBoostDuration = 1.0f;
+	private float tier1DriftBoostTimer = 0.0f;
+	private bool tier1DriftBoostOn = false;
+
+	enum Acceleration { Forward, Null, Backward };
+
+	Acceleration myAcceleration = Acceleration.Null;
+
+	enum DriftState { Right, Null, Left };
+
+	DriftState myDriftState = DriftState.Null;
+
 	void Start()
     {
 		myBody = GetComponent<Rigidbody>();
 	}
 
-    // Update is called once per frame
+
     void Update()
     {
-		currentSpeed = myBody.velocity.magnitude;
+		float driftAddCharge = 0.0f;
 
-		if (Input.GetButton("Jump"))
+		switch (myAcceleration)
 		{
-			accelerating = true;
-			myBody.velocity += -gameObject.transform.right * acceleration * Time.deltaTime;
-		}
-		else
-		{
-			accelerating = false;
+			case Acceleration.Null:
+				myDriftState = DriftState.Null;
+				driftCharge = 0.0f;
+				if (Input.GetButton("Forward"))
+				{
+					myAcceleration = Acceleration.Forward;
+					break;
+				}
+				if (Input.GetButton("Backward"))
+				{
+					myAcceleration = Acceleration.Backward;
+					break;
+				}
+				if (Input.GetAxis("Horizontal") < 0)
+				{
+					RotateCenterRight(-rotationSpeed);
+				}
+				if (Input.GetAxis("Horizontal") > 0)
+				{
+					RotateCenterRight(rotationSpeed);
+				}
+				break;
+
+			case Acceleration.Forward:
+				if (!Input.GetButton("Forward"))
+				{
+					myAcceleration = Acceleration.Null;
+					break;
+				}
+
+				if (Input.GetAxis("Horizontal") < 0)
+				{
+					RotateLeft(rotationSpeed);
+					driftAddCharge += -rotationSpeed * Time.deltaTime;
+				}
+				if (Input.GetAxis("Horizontal") > 0)
+				{
+					driftAddCharge += rotationSpeed * Time.deltaTime;
+					RotateRight(rotationSpeed);
+				}
+
+				switch (myDriftState)
+				{
+					case DriftState.Null:
+						if (Input.GetButtonDown("Backward") && !waitingDriftDir)
+						{
+							// TODO
+							// Jump
+							waitingDriftDir = true;
+						}
+						break;
+
+					case DriftState.Right:
+						if (!Input.GetButton("Backward"))
+						{
+							if (Mathf.Abs(driftCharge) >= tier1DriftCharge)
+							{
+								tier1DriftBoostOn = true;
+							}
+							driftCharge = 0.0f;
+							myDriftState = DriftState.Null;
+							break;
+						}
+						RotateCenterRight(driftRotationSpeed);
+						driftAddCharge += driftRotationSpeed * Time.deltaTime;
+						driftCharge += driftAddCharge;
+						break;
+
+					case DriftState.Left:
+						if (!Input.GetButton("Backward"))
+						{
+							if (Mathf.Abs(driftCharge) >= tier1DriftCharge)
+							{
+								tier1DriftBoostOn = true;
+							}
+							driftCharge = 0.0f;
+							myDriftState = DriftState.Null;
+							break;
+						}
+						RotateCenterRight(-driftRotationSpeed);
+						driftAddCharge += -driftRotationSpeed * Time.deltaTime;
+						driftCharge += driftAddCharge;
+						break;
+				}
+				
+				myBody.velocity += -gameObject.transform.right * acceleration * Time.deltaTime;
+				break;
+
+			case Acceleration.Backward:
+				if (!Input.GetButton("Backward"))
+				{
+					myAcceleration = Acceleration.Null;
+					break;
+				}
+				if (Input.GetAxis("Horizontal") < 0)
+				{
+					RotateLeft(rotationSpeed);
+				}
+				if (Input.GetAxis("Horizontal") > 0)
+				{
+					RotateRight(rotationSpeed);
+				}
+				myBody.velocity += gameObject.transform.right * acceleration * Time.deltaTime;
+				break;
 		}
 
-		if (Input.GetButton("Fire1"))
+		if (waitingDriftDir)
 		{
-			if (accelerating)
+			if (waitDriftDirTimer >= waitDriftDirTime)
 			{
-				RotateLeft();
+				waitDriftDirTimer = 0.0f;
+				waitingDriftDir = false;
 			}
 			else
 			{
-				RotateCenterLeft();
+				if (Input.GetAxis("Horizontal") < 0)
+				{
+					myDriftState = DriftState.Left;
+					waitDriftDirTimer = 0.0f;
+					waitingDriftDir = false;
+				}
+				else
+				{
+					if (Input.GetAxis("Horizontal") > 0)
+					{
+						myDriftState = DriftState.Right;
+						waitDriftDirTimer = 0.0f;
+						waitingDriftDir = false;
+					}
+					else
+					{
+						waitDriftDirTimer += Time.deltaTime;
+					}
+				}
 			}
 		}
 
-		if (Input.GetButton("Fire2"))
+		if (tier1DriftBoostOn)
 		{
-			if (accelerating)
+			if (tier1DriftBoostTimer >= waitDriftDirTime)
 			{
-				RotateRight();
+				tier1DriftBoostOn = false;
+				tier1DriftBoostTimer = 0.0f;
 			}
 			else
 			{
-				RotateCenterRight();
+				myBody.velocity += -gameObject.transform.right * tier1DriftBoost * Time.deltaTime;
+				tier1DriftBoostTimer += Time.deltaTime;
 			}
 		}
-    }
+	}
 
-	void RotateRight()
+	void RotateRight(float rotationSpeed)
 	{
 		gameObject.transform.RotateAround(rightPivot.transform.position, turnAxis, rotationSpeed * Time.deltaTime);
 	}
 
-	void RotateLeft()
+	void RotateLeft(float rotationSpeed)
 	{
 		gameObject.transform.RotateAround(leftPivot.transform.position, -turnAxis, rotationSpeed * Time.deltaTime);
 	}
 
-	void RotateCenterRight()
+	void RotateCenterRight(float rotationSpeed)
 	{
 		gameObject.transform.RotateAround(gameObject.transform.position, turnAxis, rotationSpeed * Time.deltaTime);
-	}
-
-	void RotateCenterLeft()
-	{
-		gameObject.transform.RotateAround(gameObject.transform.position, -turnAxis, rotationSpeed * Time.deltaTime);
 	}
 }
