@@ -135,7 +135,7 @@ public class ProtoControl : MonoBehaviour
 						break;
 				}
 				
-				myBody.velocity += -gameObject.transform.right * acceleration * Time.deltaTime;
+				myBody.velocity += gameObject.transform.up * acceleration * Time.deltaTime;
 				break;
 
 			case Acceleration.Backward:
@@ -152,7 +152,7 @@ public class ProtoControl : MonoBehaviour
 				{
 					RotateRight(rotationSpeed);
 				}
-				myBody.velocity += gameObject.transform.right * acceleration * Time.deltaTime;
+				myBody.velocity += -gameObject.transform.up * acceleration * Time.deltaTime;
 				break;
 		}
 
@@ -196,7 +196,7 @@ public class ProtoControl : MonoBehaviour
 			}
 			else
 			{
-				myBody.velocity += -gameObject.transform.right * tier1DriftBoost * Time.deltaTime;
+				myBody.velocity += gameObject.transform.up * tier1DriftBoost * Time.deltaTime;
 				tier1DriftBoostTimer += Time.deltaTime;
 			}
 		}
