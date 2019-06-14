@@ -17,7 +17,9 @@ public class ProtoControl : MonoBehaviour
 
 	private float currentSpeed;
 
-	private Vector3 turnAxis = new Vector3(0, 1, 0);
+    private float driftBonusSpeed = 1;
+
+    private Vector3 turnAxis = new Vector3(0, 1, 0);
 
 	private bool waitingDriftDir = false;
 	private float waitDriftDirTimer = 0.0f;
@@ -96,19 +98,20 @@ public class ProtoControl : MonoBehaviour
 					case DriftState.Null:
 						if (Input.GetButtonDown("Backward") && !waitingDriftDir)
 						{
-							// TODO
-							// Jump
-							waitingDriftDir = true;
-						}
+                            // TODO
+                            // Jump
+                            driftBonusSpeed = 1;
+                            waitingDriftDir = true;
+                        }
 						break;
 
 					case DriftState.Right:
 						if (!Input.GetButton("Backward"))
 						{
-							if (Mathf.Abs(driftCharge) >= tier1DriftCharge)
+                            if (Mathf.Abs(driftCharge) >= tier1DriftCharge)
 							{
 								tier1DriftBoostOn = true;
-							}
+                            }
 							driftCharge = 0.0f;
 							myDriftState = DriftState.Null;
 							break;
@@ -121,10 +124,10 @@ public class ProtoControl : MonoBehaviour
 					case DriftState.Left:
 						if (!Input.GetButton("Backward"))
 						{
-							if (Mathf.Abs(driftCharge) >= tier1DriftCharge)
+                            if (Mathf.Abs(driftCharge) >= tier1DriftCharge)
 							{
 								tier1DriftBoostOn = true;
-							}
+                            }
 							driftCharge = 0.0f;
 							myDriftState = DriftState.Null;
 							break;
@@ -135,8 +138,9 @@ public class ProtoControl : MonoBehaviour
 						break;
 				}
 				
-				myBody.velocity += gameObject.transform.up * acceleration * Time.deltaTime;
-				break;
+				myBody.velocity += gameObject.transform.up * acceleration * driftBonusSpeed * Time.deltaTime;
+                driftBonusSpeed = 1;
+                break;
 
 			case Acceleration.Backward:
 				if (!Input.GetButton("Backward"))
@@ -153,7 +157,8 @@ public class ProtoControl : MonoBehaviour
 					RotateRight(rotationSpeed);
 				}
 				myBody.velocity += -gameObject.transform.up * acceleration * Time.deltaTime;
-				break;
+                driftBonusSpeed = 1;
+                break;
 		}
 
 		if (waitingDriftDir)
