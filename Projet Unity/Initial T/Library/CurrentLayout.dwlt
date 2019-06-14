@@ -664,8 +664,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 
-    m_LastClickedInstanceID: 0
+    m_SelectedInstanceIDs: aa2c0000
+    m_LastClickedInstanceID: 11434
     m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c623000010310000eeb5fdff5a2bf2ffa00c0000e20d00004ab00000d0530000e2540000600d0000740c00000812feff880b0000a83200001ec4ffff4a4600005a4600008e2a0000d8330000f63000004a33000046330000563300005c3700006e3300006c330000605efcff44170400000000003c710400ce720400dc470000aa3100003c2b0000d2270000323000004e30000078480000282c0000362c00005e2c000014350000
     m_RenameOverlay:
