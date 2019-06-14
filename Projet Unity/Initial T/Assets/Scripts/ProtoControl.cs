@@ -30,6 +30,9 @@ public class ProtoControl : MonoBehaviour
 	private float tier1DriftBoostTimer = 0.0f;
 	private bool tier1DriftBoostOn = false;
 
+
+	[SerializeField] private float driftBurstRotation;
+
 	enum Acceleration { Forward, Null, Backward };
 
 	Acceleration myAcceleration = Acceleration.Null;
@@ -170,6 +173,7 @@ public class ProtoControl : MonoBehaviour
 					myDriftState = DriftState.Left;
 					waitDriftDirTimer = 0.0f;
 					waitingDriftDir = false;
+					RotateCenterRight(-driftBurstRotation);
 				}
 				else
 				{
@@ -178,6 +182,8 @@ public class ProtoControl : MonoBehaviour
 						myDriftState = DriftState.Right;
 						waitDriftDirTimer = 0.0f;
 						waitingDriftDir = false;
+						RotateCenterRight(driftBurstRotation * 1/Time.deltaTime);
+						Debug.Log("Drifted Right");
 					}
 					else
 					{

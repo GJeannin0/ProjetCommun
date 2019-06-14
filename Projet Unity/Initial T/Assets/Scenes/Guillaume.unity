@@ -1120,6 +1120,7 @@ MonoBehaviour:
   tier1DriftCharge: 130
   tier1DriftBoost: 30
   tier1DriftBoostDuration: 1
+  driftBurstRotation: 10
 --- !u!4 &1352782348 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -4216859302048453862, guid: 60f98d5325df9c14c852a946b75be3c6,
@@ -1642,6 +1643,7 @@ MonoBehaviour:
   tier1DriftCharge: 130
   tier1DriftBoost: 40
   tier1DriftBoostDuration: 0.5
+  driftBurstRotation: 0
 --- !u!54 &2068267437
 Rigidbody:
   m_ObjectHideFlags: 0
