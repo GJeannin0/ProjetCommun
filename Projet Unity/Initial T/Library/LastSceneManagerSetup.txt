@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Scenes/Tristan.unity
+- path: Assets/Scenes/Guillaume.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

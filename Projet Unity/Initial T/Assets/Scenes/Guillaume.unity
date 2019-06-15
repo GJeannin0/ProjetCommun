@@ -357,7 +357,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 130569840}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -0.1, y: 20.65, z: -0.79}
+  m_LocalPosition: {x: -0.1, y: 27, z: -0.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1111,15 +1111,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b72c4d69a716dba4bb525c81c76fb07b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  acceleration: 30
-  rotationSpeed: 45
-  driftRotationSpeed: 60
+  acceleration: 55
+  rotationSpeed: 60
+  driftRotationSpeed: 80
   rightPivot: {fileID: 1932765668}
   leftPivot: {fileID: 676899288}
+  driftBonusSpeed: 0.8
   waitDriftDirTime: 1
   tier1DriftCharge: 130
-  tier1DriftBoost: 35
-  tier1DriftBoostDuration: 1
+  tier1DriftBoost: 42
+  tier1DriftBoostDuration: 0.7
   driftBurstRotation: 10
 --- !u!4 &1352782348 stripped
 Transform:
@@ -1136,7 +1137,7 @@ Rigidbody:
   m_GameObject: {fileID: 1352782344}
   serializedVersion: 2
   m_Mass: 20000
-  m_Drag: 3
+  m_Drag: 3.5
   m_AngularDrag: 1000
   m_UseGravity: 0
   m_IsKinematic: 0
@@ -1639,6 +1640,7 @@ MonoBehaviour:
   driftRotationSpeed: 80
   rightPivot: {fileID: 1975071076}
   leftPivot: {fileID: 660038289}
+  driftBonusSpeed: 1
   waitDriftDirTime: 1
   tier1DriftCharge: 130
   tier1DriftBoost: 100

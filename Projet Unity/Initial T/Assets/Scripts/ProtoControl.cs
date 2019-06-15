@@ -4,26 +4,24 @@ using UnityEngine;
 
 public class ProtoControl : MonoBehaviour
 {
-	[SerializeField] private float acceleration;
-	[SerializeField] private float rotationSpeed;
-	[SerializeField] private float driftRotationSpeed;
+	[SerializeField] private float acceleration = 55;
+	[SerializeField] private float rotationSpeed = 60;
+	[SerializeField] private float driftRotationSpeed = 80;
 
 	[SerializeField] private GameObject rightPivot;
 	[SerializeField] private GameObject leftPivot;
-
-	private bool accelerating = false;
 
 	private Rigidbody myBody;
 
 	private float currentSpeed;
 
-    private float driftBonusSpeed = 1;
+	[SerializeField] private float driftBonusSpeed = 1;
 
     private Vector3 turnAxis = new Vector3(0, 1, 0);
 
 	private bool waitingDriftDir = false;
 	private float waitDriftDirTimer = 0.0f;
-	[SerializeField] private float waitDriftDirTime;
+	[SerializeField] private float waitDriftDirTime = 0.50f;
 
 	private float driftCharge = 0.0f;
 	[SerializeField] private float tier1DriftCharge = 130.0f;
@@ -33,7 +31,7 @@ public class ProtoControl : MonoBehaviour
 	private bool tier1DriftBoostOn = false;
 
 
-	[SerializeField] private float driftBurstRotation;
+	[SerializeField] private float driftBurstRotation = 10.0f;
 
 	enum Acceleration { Forward, Null, Backward };
 
@@ -148,6 +146,7 @@ public class ProtoControl : MonoBehaviour
 			case Acceleration.Backward:
 				if (!Input.GetButton("Backward"))
 				{
+					Debug.Log("Should stop going backward");
 					myAcceleration = Acceleration.Null;
 					break;
 				}
@@ -188,7 +187,6 @@ public class ProtoControl : MonoBehaviour
 						waitDriftDirTimer = 0.0f;
 						waitingDriftDir = false;
 						RotateCenterRight(driftBurstRotation * 1/Time.deltaTime);
-						Debug.Log("Drifted Right");
 					}
 					else
 					{
@@ -200,7 +198,7 @@ public class ProtoControl : MonoBehaviour
 
 		if (tier1DriftBoostOn)
 		{
-			if (tier1DriftBoostTimer >= waitDriftDirTime)
+			if (tier1DriftBoostTimer >= tier1DriftBoostDuration)
 			{
 				tier1DriftBoostOn = false;
 				tier1DriftBoostTimer = 0.0f;
