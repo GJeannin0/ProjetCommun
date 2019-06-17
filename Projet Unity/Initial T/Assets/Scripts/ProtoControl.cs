@@ -9,21 +9,24 @@ public class ProtoControl : MonoBehaviour
 	[SerializeField] private float driftRotationSpeed;
 
 	[SerializeField] private GameObject rightPivot;
-	[SerializeField] private GameObject leftPivot;
+	[SerializeField] private GameObject leftPivot; 
+    [SerializeField] private TrailRenderer leftTrail;
+    [SerializeField] private TrailRenderer rightTrail;
 
-	private bool accelerating = false;
+    private bool accelerating = false;
 
 	private Rigidbody myBody;
 
 	private float currentSpeed;
 
-    private float driftBonusSpeed = 1;
-
     private Vector3 turnAxis = new Vector3(0, 1, 0);
 
 	private bool waitingDriftDir = false;
 	private float waitDriftDirTimer = 0.0f;
-	[SerializeField] private float waitDriftDirTime;
+    [SerializeField] private float trailDelay = 2.0f;
+    private float startTime = 0.0f;
+    private bool increaseTime = false;
+    [SerializeField] private float waitDriftDirTime;
 
 	private float driftCharge = 0.0f;
 	[SerializeField] private float tier1DriftCharge = 130.0f;
@@ -43,7 +46,9 @@ public class ProtoControl : MonoBehaviour
 	void Start()
     {
 		myBody = GetComponent<Rigidbody>();
-	}
+        leftTrail.emitting = false;
+        rightTrail.emitting = false;
+    }
 
 
     void Update()
@@ -99,15 +104,20 @@ public class ProtoControl : MonoBehaviour
 						if (Input.GetButtonDown("Backward") && !waitingDriftDir)
 						{
                             // TODO
-                            // Jump
-                            driftBonusSpeed = 1;
+                            // Jump                            
+                            acceleration = 80.0f;
+                            StartCoroutine("Deceleration");
                             waitingDriftDir = true;
+                            leftTrail.emitting = true;
+                            rightTrail.emitting = true;
                         }
 						break;
 
 					case DriftState.Right:
 						if (!Input.GetButton("Backward"))
 						{
+                            startTime = 0.0f;
+                            increaseTime = true;
                             if (Mathf.Abs(driftCharge) >= tier1DriftCharge)
 							{
 								tier1DriftBoostOn = true;
@@ -124,6 +134,8 @@ public class ProtoControl : MonoBehaviour
 					case DriftState.Left:
 						if (!Input.GetButton("Backward"))
 						{
+                            startTime = 0.0f;
+                            increaseTime = true;
                             if (Mathf.Abs(driftCharge) >= tier1DriftCharge)
 							{
 								tier1DriftBoostOn = true;
@@ -137,9 +149,7 @@ public class ProtoControl : MonoBehaviour
 						driftCharge += driftAddCharge;
 						break;
 				}
-				
-				myBody.velocity += gameObject.transform.up * acceleration * driftBonusSpeed * Time.deltaTime;
-                driftBonusSpeed = 1;
+				myBody.velocity += gameObject.transform.up * acceleration * Time.deltaTime;
                 break;
 
 			case Acceleration.Backward:
@@ -157,7 +167,6 @@ public class ProtoControl : MonoBehaviour
 					RotateRight(rotationSpeed);
 				}
 				myBody.velocity += -gameObject.transform.up * acceleration * Time.deltaTime;
-                driftBonusSpeed = 1;
                 break;
 		}
 
@@ -205,7 +214,18 @@ public class ProtoControl : MonoBehaviour
 				tier1DriftBoostTimer += Time.deltaTime;
 			}
 		}
-	}
+        // Show the GameObjects when time exceeds delay.
+        if (increaseTime)
+        {
+            startTime += Time.deltaTime;
+            if (startTime > trailDelay)
+            {
+                leftTrail.emitting = false;
+                rightTrail.emitting = false;
+                increaseTime = false;
+            }
+        }
+    }
 
 	void RotateRight(float rotationSpeed)
 	{
@@ -221,4 +241,14 @@ public class ProtoControl : MonoBehaviour
 	{
 		gameObject.transform.RotateAround(gameObject.transform.position, turnAxis, rotationSpeed * Time.deltaTime);
 	}
+
+    IEnumerator Deceleration()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            yield return new WaitForSeconds(1.0f);
+            acceleration -= 10.0f;
+        }
+        StopCoroutine("Deceleration");
+    }
 }
