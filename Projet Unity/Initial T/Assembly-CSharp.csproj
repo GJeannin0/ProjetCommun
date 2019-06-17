@@ -64,6 +64,8 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\HitEffect.cs" />
     <Compile Include="Assets\Scripts\ProtoControl.cs" />
+    <Compile Include="Assets\Scripts\shootingScript.cs" />
+    <Compile Include="Assets\Scripts\spawningShoot.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>C:/Users/trist/Desktop/initial T project/ProjetCommun/Projet Unity/Initial T/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
